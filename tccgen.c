@@ -5577,10 +5577,21 @@ static void expr_cond(void)
 		  type = type1;
             } else if (bt1 == VT_FUNC || bt2 == VT_FUNC) {
                 /* XXX: test function pointer compatibility */
-                type = bt1 == VT_FUNC ? type1 : type2;
+                // Pnut doesn't like ternary operators and struct assignments
+                // type = (bt1 == VT_FUNC) ? type1 : type2;
+                if (bt1 == VT_FUNC) {
+                    type = type1;
+                } else {
+                    type = type2;
+                }
             } else if (bt1 == VT_STRUCT || bt2 == VT_STRUCT) {
                 /* XXX: test structure compatibility */
-                type = bt1 == VT_STRUCT ? type1 : type2;
+                // type = (bt1 == VT_STRUCT) ? type1 : type2;
+                if (bt1 == VT_STRUCT) {
+                    type = type1;
+                } else {
+                    type = type2;
+                }
             } else if (bt1 == VT_VOID || bt2 == VT_VOID) {
                 /* NOTE: as an extension, we accept void on only one side */
                 type.t = VT_VOID;

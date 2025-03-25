@@ -606,7 +606,7 @@ ST_FUNC int tcc_open(TCCState *s1, const char *filename)
     if (strcmp(filename, "-") == 0)
         fd = 0, filename = "<stdin>";
     else
-        fd = open(filename, O_RDONLY | O_BINARY);
+        fd = open(filename, O_RDONLY | O_BINARY, "r");
     if ((s1->verbose == 2 && fd >= 0) || s1->verbose == 3)
         printf("%s %*s%s\n", fd < 0 ? "nf":"->",
                (int)(s1->include_stack_ptr - s1->include_stack), "", filename);
@@ -766,7 +766,8 @@ LIBTCCAPI TCCState *tcc_new(void)
     {
         /* define __TINYC__ 92X  */
         char buffer[32]; int a,b,c;
-        sscanf(TCC_VERSION, "%d.%d.%d", &a, &b, &c);
+        // sscanf(TCC_VERSION, "%d.%d.%d", &a, &b, &c);
+        a = 0; b = 9; c = 27;
         sprintf(buffer, "%d", a*10000 + b*100 + c);
         tcc_define_symbol(s, "__TINYC__", buffer);
     }
@@ -1642,7 +1643,7 @@ static void args_parser_listfile(TCCState *s,
     int argc = 0;
     char **argv = NULL;
 
-    fd = open(filename, O_RDONLY | O_BINARY);
+    fd = open(filename, O_RDONLY | O_BINARY, "r");
     if (fd < 0)
         tcc_error("listfile '%s' not found", filename);
 

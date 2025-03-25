@@ -89,12 +89,17 @@ extern long double strtold (const char *__nptr, char **__endptr);
 #define countof(tab) (sizeof(tab) / sizeof((tab)[0]))
 #endif
 
+#ifdef PNUT_CC
+#define NORETURN
+#define ALIGNED(x)
+#else
 #ifdef _MSC_VER
 # define NORETURN __declspec(noreturn)
 # define ALIGNED(x) __declspec(align(x))
 #else
 # define NORETURN __attribute__((noreturn))
 # define ALIGNED(x) __attribute__((aligned(x)))
+#endif
 #endif
 
 #ifdef _WIN32
@@ -161,6 +166,9 @@ extern long double strtold (const char *__nptr, char **__endptr);
 #  define TCC_IS_NATIVE
 # endif
 #endif
+
+// tcc-run is not supported by pnut and not needed for bootstrapping
+#undef TCC_IS_NATIVE
 
 #if defined TCC_IS_NATIVE && !defined CONFIG_TCCBOOT
 # define CONFIG_TCC_BACKTRACE
@@ -434,21 +442,21 @@ typedef struct SValue {
 /* symbol attributes */
 struct SymAttr {
     unsigned short
-    aligned     : 5, /* alignment as log2+1 (0 == unspecified) */
-    packed      : 1,
-    weak        : 1,
-    visibility  : 2,
-    dllexport   : 1,
-    dllimport   : 1,
-    unused      : 5;
+    aligned     , /* alignment as log2+1 (0 == unspecified) */
+    packed      ,
+    weak        ,
+    visibility  ,
+    dllexport   ,
+    dllimport   ,
+    unused      ;
 };
 
 /* function attributes or temporary attributes for parsing */
 struct FuncAttr {
     unsigned
-    func_call   : 3, /* calling convention (0..5), see below */
-    func_type   : 2, /* FUNC_OLD/NEW/ELLIPSIS */
-    func_args   : 8; /* PE __stdcall args */
+    func_call   , /* calling convention (0..5), see below */
+    func_type   , /* FUNC_OLD/NEW/ELLIPSIS */
+    func_args   ; /* PE __stdcall args */
 };
 
 /* GNUC attribute definition */

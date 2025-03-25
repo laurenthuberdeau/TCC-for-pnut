@@ -106,7 +106,12 @@ enum {
 #else /* ! TARGET_DEFS_ONLY */
 /******************************************************/
 #include "tcc.h"
+#ifdef PNUT_CC
+# define assert(expr)
+# define abort()
+#else
 #include <assert.h>
+#endif
 
 ST_DATA const int reg_classes[NB_REGS] = {
     /* eax */ RC_INT | RC_RAX,
@@ -1192,12 +1197,13 @@ static X86_64_Mode classify_x86_64_arg(CType *ty, CType *ret, int *psize, int *p
     return mode;
 }
 
+/* This definition must be synced with stdarg.h */
+enum __va_arg_type {
+    __va_gen_reg, __va_float_reg, __va_stack
+};
+
 ST_FUNC int classify_x86_64_va_arg(CType *ty)
 {
-    /* This definition must be synced with stdarg.h */
-    enum __va_arg_type {
-        __va_gen_reg, __va_float_reg, __va_stack
-    };
     int size, align, reg_count;
     X86_64_Mode mode = classify_x86_64_arg(ty, NULL, &size, &align, &reg_count);
     switch (mode) {
@@ -1241,7 +1247,7 @@ void gfunc_call(int nb_args)
     int nb_reg_args = 0;
     int nb_sse_args = 0;
     int sse_reg, gen_reg;
-    char _onstack[nb_args], *onstack = _onstack;
+    char _onstack[1000], *onstack = _onstack;
 
     /* calculate the number of integer/float register arguments, remember
        arguments to be passed via stack (in onstack[]), and also remember

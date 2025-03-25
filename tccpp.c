@@ -1805,7 +1805,7 @@ ST_FUNC void preprocess(int is_bof)
         i = tok == TOK_INCLUDE_NEXT ? file->include_next_index : 0;
         n = 2 + s1->nb_include_paths + s1->nb_sysinclude_paths;
         for (; i < n; ++i) {
-            char buf1[sizeof file->filename];
+            char buf1[1024];
             CachedInclude *e;
             const char *path;
 
